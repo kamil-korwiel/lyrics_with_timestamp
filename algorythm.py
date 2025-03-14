@@ -28,7 +28,7 @@ Preoccupied Nobody's hiding it
 Preoccupied Nobody's hiding it 
 Preoccupied Nobody's hiding it""" 
 
-from pyphonetics import Soundex
+from pyphonetics import RefinedSoundex
 
 
 def biggest_string_number(*args:list[str]):
@@ -38,14 +38,14 @@ def biggest_string_number(*args:list[str]):
             big = len(the_list.__str__())
     return big
 
-def show_phone(original:list[str], gen:list[str]):
-    soundex = Soundex()
+# def show_phone(original:list[str], gen:list[str]):
+#     soundex = Soundex()
 
-    arr_phon_org = [ soundex.phonetics(word) for word in original ]
-    arr_phon_gen = [ soundex.phonetics(word) for word in gen ]
+#     arr_phon_org = [ soundex.phonetics(word) for word in original ]
+#     arr_phon_gen = [ soundex.phonetics(word) for word in gen ]
 
-    print(arr_phon_org)
-    print(arr_phon_gen)
+#     print(arr_phon_org)
+#     print(arr_phon_gen)
 
 
 def naive_spread_algorithm(original:list[str], gen:list[str]):
@@ -117,6 +117,51 @@ def balk_spread_algorithm(original:list[str], gen:list[str], spread:int = 5) -> 
     
     return similar_words
 
+def balk_spread_algorithm_with_phonetics(original:list[str], gen:list[str], spread:int = 3, distance:int = 2) -> list[tuple]:
+    len_gen = len(gen)
+    len_original = len(original)
+    rs = RefinedSoundex()
+
+    SPREAD = spread
+
+    index_balk = 0
+
+    index_first_spread_target = 0
+
+    similar_words = []
+
+    for index_original in range(len_original):
+        word = original[index_original]
+
+
+        if SPREAD // 2 + index_balk > index_original: 
+            index_first_spread_target = index_balk
+        else:
+            index_first_spread_target = index_original - SPREAD // 2
+
+        for index_spread in range(index_first_spread_target, SPREAD+index_first_spread_target):
+            if index_spread < len_gen:
+                distance_word = rs.distance(word,gen[index_spread])
+
+                if distance_word < distance:
+                    similar_words.append((index_original, index_spread))
+                    index_balk = index_spread + 1
+                    break
+
+                # if word.lower() == gen[index_spread].lower():
+                #     similar_words.append((index_original, index_spread))
+                #     index_balk = index_spread + 1
+                #     break
+    
+    return similar_words
+
+def marge_lyrics_timestamp():
+# ? Samo wchałanianie słów 
+# ? Wchałanianie słów +0,25s
+# ? Estymacja na podstawie pomiedzy dwoma słowami
+    pass
+  
+
 def main():
     # print(original_lyrics.replace('\n', ' ').split())
     # print(gen_lyrics.replace('\n', ' ').split())
@@ -142,11 +187,13 @@ def main():
         print('org:', org_line)
         print('gen:', gen_line)
         
+        print(balk_spread_algorithm_with_phonetics(org_line,gen_line))
+
         # indexes = balk_spread_algorithm(org_line, gen_line)
         # for org, gen in indexes:
         #     print(f'{org_line[org]} === {gen_line[gen]}', (org, gen))
         
-        show_phone(org_line, gen_line)
+        
         
 
 

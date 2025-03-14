@@ -11,7 +11,8 @@ def main():
         
         path_file_audio = Path("./MacDeMarco - Preoccupied (vocals).wav")
         model = whisper_timestamped.load_model("small", device="cuda")  # Choose from tiny, base, small, medium, large
-        result = model.transcribe(str(path_file_audio), word_timestamps=True)
+        result = whisper_timestamped.transcribe(model, str(path_file_audio), vad="auditok")
+        # model.transcribe(str(path_file_audio), word_timestamps=True)
 
         path_file_json = Path('./gen_lyrics.json')
         with open(path_file_json,'w') as file:
